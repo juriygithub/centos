@@ -1,0 +1,7 @@
+ls -l /dev/disk/by-uuid
+
+ищем uuid нужного раздела
+
+теперь открываем /etc/fstab и дописываем в конец
+
+UUID=7CEAB1BAEAB170CE /home/juriy/NTFS/MEDIA              ntfs    defaults        0       0

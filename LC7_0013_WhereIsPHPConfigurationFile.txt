@@ -1,0 +1,64 @@
+Where Is The php.ini Configuration File In CentOS?
+Posted by Jarrod on April 5, 2017 Leave a comment (0)Go to comments
+How can we find the default configuration files for the PHP packages 
+in CentOS Linux?
+
+By using the RPM command we can query a package to find all of its 
+associated configuration files. Failing that we can use the find 
+command to search the file system for these files, as we will see here.
+
+Finally we’ll cover how we can use a phpinfo file to show us which 
+configuration file is in use.
+
+
+RPM Query Configuration Files
+The options we will use with the RPM command are -q to query a package,
+ and -c which will list the configuration files that are part of the 
+ package. As shown below we have run RPM with the -qc options on the 
+ php-common package, which is a dependency when installing the php 
+ package and is where the php.ini file comes from in CentOS.
+
+[root@centos7 ~]# rpm -qc php-common
+/etc/php.d/curl.ini
+/etc/php.d/fileinfo.ini
+/etc/php.d/json.ini
+/etc/php.d/phar.ini
+/etc/php.d/zip.ini
+/etc/php.ini
+These are all of the default configuration files that are installed 
+by the php-common package, we can see here that by default the php.ini 
+file is found at /etc/php.ini.
+
+There are also a couple more configuration files from the php package.
+
+[root@centos7 ~]# rpm -qc php
+/etc/httpd/conf.d/php.conf
+/etc/httpd/conf.modules.d/10-php.conf
+The php package requires the httpd package to be installed, 
+which makes sense as these are the configuration files that tell 
+Apache how to work with PHP.
+
+Find Command
+If you aren’t using packages to install PHP and perhaps compiled it
+ from source instead or otherwise installed to a custom location, 
+ we can easily run find over the entire file system to find these files.
+
+[root@centos7 ~]# find / -name php.ini
+/etc/php.ini
+The above example will search through root file system ‘/’ and find 
+every file named ‘php.ini’.
+
+PHPInfo
+We can create a simple phpinfo file and open it in a browser to display 
+the location of the php.ini file that is being used. Copy the below into
+ a .php file and navigate to it within a browser to view this 
+ information. You should delete the file once you’re done, as this 
+ can provide a lot of information to an attacker.
+
+<?php
+phpinfo();
+?>
+The “Configuration File (php.ini) Path” shows the directory the 
+php.ini file can be found in, while “Loaded Configuration File” 
+shows the full path to the file.
+

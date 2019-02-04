@@ -1,0 +1,33 @@
+Как подключить сетевой диск Windows в Linux
+07/13/2015
+Поддержку сетевых дисков Windows в Linux обеспечивает пакет cifs-utils. Если он у вас
+еще не установлен, в командной строке от имени суперпользователя введите
+
+ 
+sudo yum install cifs-utils
+
+Эта команда проверит, установлен ли указанный пакет и, если нет, установит его.
+Создайте в /mnt (или любом другом месте) папку, в которую мы будем подключать сетевой
+диск Windows:
+
+mkdir /mnt/IC_FILE_SRV
+
+И наконец само подключение сетевой папки Windows в Linux выполняется с помощью
+команды mount.cifs
+
+
+sudo mount.cifs //101.5.2.4/IC /mnt/IC_FILE_SRV -o username=*****,password=*****
+
+Теперь создаем файл конфига
+
+geany /home/juriy/icfileservercreds
+
+в него в носим
+user=******
+password=******
+
+допишем в fstab
+
+//101.5.2.4/IC /mnt/IC_FILE_SRV cifs credentials=/home/juriy/icfileservercreds,uid=1000,gid=1000 0 0
+
+

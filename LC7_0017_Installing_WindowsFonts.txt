@@ -1,0 +1,29 @@
+yum install wine
+yum install cabextract
+
+yum install curl cabextract xorg-x11-font-utils fontconfig
+
+yum install p7zip-plugins 
+
+Install Windows fonts on CentOS 7.3
+
+To install the regular Windows fonts on CentOS 7 you need to download 
+them first. You can use the Windows 10 ISO that's freely available 
+from Microsoft. To extract them you also have to install the 
+p7zip-plugins package that's available from the epel-repo.
+
+#Мои заметки############################################################
+Я взял ttc and 
+.ttf fonts с готовой установки винды. Далее, пошел в папку
+/usr/share/fonts/
+в ней создал папку winfonts и в нее поклал файлы шрифтов
+а потом выполнил fc-cache -fv
+########################################################################
+
+After mounting the iso you have to open the install.wim archive 
+located in the sources directory. Within the install.wim archive the 
+location of the fonts is /1/Windows/Fonts/. You can copy the .ttc and 
+.ttf fonts into ~/.fonts/. After that you can reboot your machine or 
+
+update the font cache manually: fc-cache -fv.
+

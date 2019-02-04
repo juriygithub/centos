@@ -1,0 +1,20 @@
+	
+yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+yum install http://rpms.remirepo.net/enterprise/remi-release-7.rpm	
+	
+yum install yum-utils
+
+Теперь испльзуем одну из программ данного пакета yum-config-manager.
+ С её помощью можно указать репозиторий который будет использоваться по
+ умолчанию для определенного ПО, в нашем случае Зделать это можно таким способом:
+
+
+yum-config-manager --enable remi-php70
+Если необходимо поставить PHP 7.1 и 7.2 , соответвенно команды будут следующие
+
+
+yum-config-manager --enable remi-php71 
+yum-config-manager --enable remi-php72
+
+yum install php php-mcrypt php-cli php-gd php-curl php-mysql php-ldap php-zip php-fileinfo php-mysqld php-mbstring
+

@@ -1,0 +1,51 @@
+Подключение SMB-ресурсов в CentOS
+Статья описывает два способа подключения SMB-ресурсов в операционной системе CentOS 7: "статический" при старте системы, и "динамический" при обращении к папке подключения
+
+Для наглядности будем считать, что:
+имя домена Active Directory - corp.local
+имя подключаемого ресурса - //fs.corp.local/share
+имя пользователя - user
+пароль пользователя - pass
+папка подключения - /mnt/data (папка "data" не создана)
+пользователь-владелец - usr
+группа-владелец - grp
+права доступа к папкам - 755
+права доступа к файлам - 644
+"Статическое" подключение
+
+создаем папку /mnt/data
+mkdir /mnt/data
+Замечание: владельцев папки и права доступа к ней не изменяем, так как они будут настраиваться автоматически при подключении ресурса на основании указанных далее параметров
+в файл /etc/fstab добавляем строку с параметрами подключения
+//fs.corp.local/share /mnt/data cifs rw,uid=usr,gid=grp,dir_mode=0755,file_mode=0644,credentials=/etc/fstab.credentials
+создаем файл /etc/fstab.credentials с учетными данными для подключения к ресурсу
+domain=corp.local
+username=user
+password=pass
+настраиваем права доступа к файлу /etc/fstab.credentials
+chmod 400 /etc/fstab.credentials
+перезагружаемся
+reboot
+"Динамическое" подключение
+
+устанавливаем пакет autofs
+yum install autofs
+заменяем содержимое файла /etc/sysconfig/autofs на следующее
+MASTER_MAP_NAME=/etc/auto.master.d/auto.master
+переносим файл auto.master из папки /etc в папку /etc/auto.master.d
+mv /etc/auto.master /etc/auto.master.d/auto.master
+заменяем содержимое файла /etc/auto.master.d/auto.master на следующее
+/mnt /etc/auto.master.d/map
+создаем файл /etc/auto.master.d/map следующего содержания
+data -fstype=cifs,rw,uid=usr,gid=grp,dir_mode=0755,file_mode=0644,domain=corp.local,username=user,password=pass ://fs.corp.local/share
+настраиваем права доступа к содержимому папки /etc/auto.master.d
+chmod 400 /etc/auto.master.d/*
+удаляем файл /etc/auto.misc
+rm /etc/auto.misc
+настраиваем автоматический запуск autofs при старте системы
+systemctl enable autofs
+перезапускаем autofs
+service autofs restart
+пробуем получить доступ к сетевому ресурсу
+ls -l /mnt/data
+Замечание: папка "data" будет создаваться автоматически при обращении к ней

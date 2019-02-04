@@ -1,0 +1,62 @@
+SOURCE:https://tecadmin.net/install-apache-openoffice-on-centos-rhel-and-fedora/
+
+If you do not have already installed java on your system,
+ use below link to install latest java version.
+
+**********************************************************************
+Install JAVA/JDK 11 on CentOS/RHEL 7/6
+Download the latest Java SE Development Kit 11 LTS 
+release from its official download page or use following commands to download from command line.
+
+wget --no-cookies --no-check-certificate --header "Cookie: oraclelicense=accept-securebackup-cookie" \
+  http://download.oracle.com/otn-pub/java/jdk/11+28/55eed80b163941c8885ad9298e6d786a/jdk-11_linux-x64_bin.tar.gz
+  |_> Ссылка не рабочая. Я скачал сам с сайта. Скачал сюда 
+  /home/juriy/Загрузки/jdk-11.0.2_linux-x64_bin.rpm
+  
+  cd /home/juriy/Загрузки/
+
+  
+
+rpm -ivh jdk-11.0.2_linux-x64_bin.rpm
+**********************************************************************
+
+Удаляем LibreOffice
+sudo yum remove libreoffice*
+
+Step 2 – Download OpenOffice
+Download openoffice from Apache official site as per your system 
+setting or Use the following command to download.
+
+
+
+
+wget https://sourceforge.net/projects/openofficeorg.mirror/files/4.1.6/
+	binaries/ru/
+	Apache_OpenOffice_4.1.6_Linux_x86-64_install-rpm_ru.tar.gz
+tar xzf Apache_OpenOffice_4.1.6_Linux_x86-64_install-rpm_ru.tar.gz
+
+After extracting archive it will create an installation directory 
+named en-US (в моем случае создалась папка ru),
+and placed all the files there.
+
+Step 3 – Install Apache OpenOffice
+Navigate to Apache OpenOffice installation directory and to its RPMS 
+folder, You will see a list of rpms there. Install all rpms using 
+the following command.
+
+cd RU/RPMS/
+rpm -Uvh *.rpm
+
+Now install the desktop integration features for your setup. 
+Go to desktop-integration in the installation directory, 
+and install the required package.
+
+cd desktop-integration/
+rpm -Uvh openoffice4.1.6-redhat-menus-*.noarch.rpm
+
+
+Step 4 – Launch Apache OpenOffice
+After successfully installed all the packages in the above steps,
+ start Openoffice using following command.
+
+#openoffice4

@@ -1,0 +1,3 @@
+https://serveradmin.ru/nginx-php-fpm-na-centos-7/
+https://serveradmin.ru/centos-7-nastroyka-servera/
+https://serveradmin.ru/nastroyka-seti-v-centos/

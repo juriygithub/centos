@@ -1,0 +1,5 @@
+yum remove mariadb mariadb-server
+rm -rf /var/lib/mysql
+rm /etc/my.cnf
+rm ~/.my.cnf
+yum remove MariaDB-server MariaDB-client

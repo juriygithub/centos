@@ -1,0 +1,237 @@
+Introduction
+
+Apache's mod_rewrite can be used to manipulate URLs. It is compiled into
+ the base Apache Web Server. This module provides the ability to 
+ manipulate URLs prior to determining the appropriate file or handing 
+ off to a script. It can help you, if you want to offer different URLs 
+ for the same file. This is most commonly used when a visitor goes to a
+ certain web address, but the server returns a different page. 
+ This module uses a rule-based rewriting engine to rewrite requested 
+ URLs on the fly. It supports an unlimited number of rules to provide 
+ a really flexible and powerful URL manipulation mechanism. It can hide
+  sensitive information, such as query strings, from URL requests.
+   This can potentially enhance website safety.
+
+In this tutorial, we will explain how to enable mod_rewrite and 
+demonstrate some common ways to use it in Apache on CentOS 7.
+
+Requirements
+
+    A server running CentOS 7
+
+	Install Apache
+
+	Before we begin with the mod_rewrite module setup, 
+	we need to install the Apache web server.
+
+To install Apache, run the following command:
+
+sudo yum install httpd -y
+
+After installing Apache, start the httpd service and enable 
+it to start automatically on boot.
+
+We can do this using the following commands:
+
+sudo systemctl start httpd.service
+sudo systemctl enable httpd.service
+
+Next, we should allow access to the default Apache port 80 (HTTP) 
+using firewalld.
+
+We can do this by running the following command:
+
+sudo firewall-cmd --permanent --add-port=80/tcp
+
+Now, reload the firewall service for the changes to take effect.
+
+sudo systemctl restart firewalld.service
+
+***********************************************************************
+
+Enable mod_rewrite Module
+
+The mod_rewrite module is enabled by default on CentOS 7. 
+If you find it is not enabled on your server, you can enable it by 
+editing 00-base.conf file located in /etc/httpd/conf.modules.d/ 
+directory.
+
+sudo nano /etc/httpd/conf.modules.d/00-base.conf
+
+Add or uncomment the following line:
+
+LoadModule rewrite_module modules/mod_rewrite.so
+
+Save and close the file, then restart the httpd service:
+
+sudo systemctl restart httpd
+
+
+Enable .htaccess File
+
+Once the mod_rewrite module has been activated, you can set up your URL
+rewrites by creating an .htaccess file in your default document root 
+directory. A .htaccess file allows us to modify our rewrite rules 
+without accessing server configuration files. 
+For this reason, .htaccess is critical to your web server. 
+Before we begin, we need to allow Apache to read .htaccess 
+files located under the /var/www/html directory.
+
+You can do this by editing httpd.conf file:
+
+sudo nano /etc/httpd/conf/httpd.conf
+
+Find the section <directory /var/www/html> 
+and change AllowOverride None to AllowOverride All
+
+ <Directory /var/www/html>
+    AllowOverride All
+ </Directory>
+
+Save and exit.
+Now restart Apache to put the change into effect:
+
+sudo systemctl restart httpd
+
+
+
+Configure Rewrite Module
+
+#Мои заметки################################
+создаю файл .htacces в document root
+с таким содержимым
+RewriteEngine On
+options -indexes
+deny from all
+
+это для того чтобы глобаль разрешить работу модуля.
+потом же для каждого сайта можно создавать свой файлик
+с правилами и пихать его в корень сайта
+###########################################3
+
+In this section, we will explain basic mod_rewrite syntax and 
+give some examples.
+
+You can write RewriteRules using the following format:
+
+RewriteRule pattern substitution [flags]
+
+    RewriteRule: This directive specifies the name of the 
+    the mod_rewrite directive that you want to use.
+    Pattern: This directive specifies a regular expression
+     that matches the desired string
+    Substitution: This directive specifies the path of the 
+    actual URL of the page with the information you want to display.
+    Flags: A flag is a tag at the end of the Rewrite Rule directive 
+    that specifies optional parameters that can modify the rule.
+
+Let's discuss RewriteRules with some examples:
+Redirect www to non-www
+
+If you want to redirect users from www to a plain non-www domain, 
+you will need to create .htaccess file in Apache document root directory.
+
+Change directories to your Document root:
+
+cd /var/www/html
+
+Create the .htaccess file:
+
+sudo nano .htaccess
+
+Add the following content:
+
+RewriteEngine On
+RewriteBase /
+RewriteCond %{HTTP_HOST} ^www\.(.*)$ [NC]
+RewriteRule ^(.*)$ http://%1/$1 [R=301,L]
+
+Save and exit the file.
+
+We can use curl to test that the www domain redirects to the 
+non-www domain:
+
+curl -I http://www.yourdomain.com
+
+You should see the following output:
+
+HTTP/1.1 301 Moved Permanently
+Date: Mon, 03 May 2016 18:20:53 GMT
+Server: Apache/2.4.6 (CentOS)
+Location: http://yourdomain.com/
+Content-Type: text/html; charset=iso-8859-1
+
+Above output shows the non-www redirect location http://yourdomain.com/
+Redirect non-www to www
+
+If you want to redirect users from a plain non-www domain to a www 
+domain, add the following content to your .htaccess file:
+
+sudo nano /var/www/html/.htaccess
+
+Add the following content:
+
+RewriteEngine On
+RewriteBase /
+RewriteCond %{HTTP_HOST} !^www\. [NC]
+RewriteRule ^(.*)$ http://www.%{HTTP_HOST}/$1 [R=301,L]
+
+Save and exit the file.
+
+Now, use curl command to ensure that the non-www domain redirects 
+to the www domain:
+
+curl -I http://yourdomain.com
+
+You should see the following output:
+
+HTTP/1.1 301 Moved Permanently
+Date: Mon, 03 May 2016 18:20:53 GMT
+Server: Apache/2.4.6 (CentOS)
+Location: http://www.yourdomain.com/
+Content-Type: text/html; charset=iso-8859-1
+
+Above output shows the www redirect location http://www.yourdomain.com/
+Redirect All Website Pages
+
+If you want to redirect all pages from "olddomain.com" to 
+"newdomain.com", edit the .htaccess file:
+
+sudo nano /var/www/html/.htaccess
+
+Add the following content:
+
+Options +FollowSymLinks
+RewriteEngine on
+RewriteCond %{HTTP_HOST} ^www.olddomain.com$ [OR]
+RewriteCond %{HTTP_HOST} ^olddomain.com$
+RewriteRule ^(.*)$ http://www.newdomain.com/$1 [R=301,L]
+
+Save and exit the file.
+
+Now, use curl to test that the "www.olddomain.com" domain 
+redirects to the "www.newdomain.com" domain:
+
+curl -I http://www.olddomain.com
+
+You should get a 301 Moved Permanently response that shows you 
+the new domain redirect location.
+Deny File Type Access
+
+If you want to deny users to access specific file types such 
+as: .pdf, .css, .gif, .png, or .bmp then edit your .htacces file:
+
+sudo nano /var/www/html/.htaccess
+
+Add the following content:
+
+RewriteEngine on
+RewriteRule .*\.(pdf|css|gif|png|bmp)$ - [F,NC]
+
+Save and exit the file.
+Summary
+
+Those are just a few examples of how mod_rewrite can be used. 
+If you have questions about these examples please let us know 
+below. You are also welcome to post in the ProfitBricks DevOps 
+Community section of this site.

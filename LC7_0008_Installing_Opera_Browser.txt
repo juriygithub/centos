@@ -1,0 +1,29 @@
+sudo su -
+
+Import the public GPG key of the Opera browser.
+
+rpm --import https://rpm.opera.com/rpmrepo.key 
+
+Add Opera browser repository to the system.
+
+geany /etc/yum.repos.d/opera.repo
+
+[opera]
+name=Opera packages
+type=rpm-md
+baseurl=https://rpm.opera.com/rpm
+gpgcheck=1
+gpgkey=https://rpm.opera.com/rpmrepo.key
+enabled=1
+
+
+
+nstall the Opera browser using the YUM command.
+
+### CentOS 7 / RHEL 7 ###
+
+yum -y install opera-stable
+
+### Fedora 28/27 ###
+
+dnf -y install opera-stable
